@@ -50,16 +50,20 @@ def es2():
     from shapely.geometry import Point
     punto = gpd.GeoSeries([Point(longitudine, latitudine)], crs = 4326).to_crs(3857)
     m500 = parcheggi3857[parcheggi3857.distance(punto.geometry.item()) < 500]
-    quartieriParcheggi500 = quartieri3857[quartieri3857.intersects(m500.unary_union)]
-    ax = m500.plot(figsize = (17, 12), markersize = 40, color = 'red')
-    quartieriParcheggi500.plot(ax = ax, edgecolor = 'k', facecolor = 'none', linewidth = 2)
-    ctx.add_basemap(ax)
+    if len(m500) > 0:
+        quartieriParcheggi500 = quartieri3857[quartieri3857.intersects(m500.unary_union)]
+        ax = m500.plot(figsize = (17, 12), markersize = 40, color = 'red')
+        quartieriParcheggi500.plot(ax = ax, edgecolor = 'k', facecolor = 'none', linewidth = 2)
+        ctx.add_basemap(ax)
 
-    dir = "static/images"
-    file_name = "es2.png"
-    save_path = os.path.join(dir, file_name)
-    plt.savefig(save_path, dpi = 150)
-    return render_template("mappa.html", immagine = file_name)
+        dir = "static/images"
+        file_name = "es2.png"
+        save_path = os.path.join(dir, file_name)
+        plt.savefig(save_path, dpi = 150)
+        return render_template("mappa.html", immagine = file_name)
+    else:
+        risultato = "non ci sono parcheggi nel raggio di 500 metri"
+        return render_template("errore.html", ris = risultato)
 
 
 
